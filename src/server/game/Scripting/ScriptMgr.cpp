@@ -33,6 +33,7 @@
 #include "Player.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "sc_npc_teleport.h"
 
 // namespace
 // {
@@ -193,6 +194,8 @@ void ScriptMgr::Initialize()
     uint32 oldMSTime = getMSTime();
 
     LoadDatabase();
+    // Load TeleNPC2 - maybe not the best place to load it ...
+    LoadNpcTele();
 
     TC_LOG_INFO("server.loading", "Loading C++ scripts");
 

@@ -1415,13 +1415,15 @@ void AddBattlegroundScripts()
 
 #ifdef SCRIPTS
 /* This is where custom scripts' loading functions should be declared. */
-
+//TeleNPC2
+void AddSC_npc_teleport();
 #endif
 
 void AddCustomScripts()
 {
 #ifdef SCRIPTS
     /* This is where custom scripts should be added. */
-
+    //TeleNPC2
+    AddSC_npc_teleport();
 #endif
 }
