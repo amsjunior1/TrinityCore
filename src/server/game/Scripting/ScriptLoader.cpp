@@ -1419,6 +1419,7 @@ void AddBattlegroundScripts()
 void AddSC_npc_teleport();
 void AddSC_PWS_Transmogrification();
 void AddSC_CS_Transmogrification();
+void AddSC_icc_rings();
 #endif
 
 void AddCustomScripts()
@@ -1429,5 +1430,6 @@ void AddCustomScripts()
     AddSC_npc_teleport();
     AddSC_PWS_Transmogrification();
     AddSC_CS_Transmogrification();
+    AddSC_icc_rings();
 #endif
 }
