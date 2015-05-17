@@ -1417,6 +1417,8 @@ void AddBattlegroundScripts()
 /* This is where custom scripts' loading functions should be declared. */
 //TeleNPC2
 void AddSC_npc_teleport();
+void AddSC_PWS_Transmogrification();
+void AddSC_CS_Transmogrification();
 #endif
 
 void AddCustomScripts()
@@ -1425,5 +1427,7 @@ void AddCustomScripts()
     /* This is where custom scripts should be added. */
     //TeleNPC2
     AddSC_npc_teleport();
+    AddSC_PWS_Transmogrification();
+    AddSC_CS_Transmogrification();
 #endif
 }
