@@ -389,7 +389,7 @@ std::string AccountMgr::CalculateShaPassHash(std::string const& name, std::strin
 
 bool AccountMgr::IsPlayerAccount(uint32 gmlevel)
 {
-    return gmlevel == SEC_PLAYER;
+    return gmlevel <= SEC_MODERATOR;
 }
 
 bool AccountMgr::IsAdminAccount(uint32 gmlevel)
