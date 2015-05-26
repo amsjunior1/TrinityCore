@@ -26,6 +26,7 @@
 #include "World.h"
 #include "Group.h"
 #include "Player.h"
+#include "NinjaInquisitor.h"
 
 MapInstanced::MapInstanced(uint32 id, time_t expiry) : Map(id, expiry, 0, DUNGEON_DIFFICULTY_NORMAL)
 {
@@ -178,6 +179,7 @@ Map* MapInstanced::CreateInstanceForPlayer(const uint32 mapId, Player* player)
             map = FindInstanceMap(newInstanceId);
             if (!map)
                 map = CreateInstance(newInstanceId, NULL, diff);
+            sNinjaInquisitor->InitializeInstance(newInstanceId);
         }
     }
 

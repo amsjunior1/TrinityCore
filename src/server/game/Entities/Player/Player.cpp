@@ -79,6 +79,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "NinjaInquisitor.h"
 #include "GameObjectAI.h"
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
@@ -661,6 +662,10 @@ Player::Player(WorldSession* session): Unit(true)
 {
     m_speakTime = 0;
     m_speakCount = 0;
+
+    // VISTAWOW DPS COUNTERS
+    m_DamageCounterGUID = ObjectGuid::Empty;
+    m_HealingCounterGUID = ObjectGuid::Empty;
 
     m_objectType |= TYPEMASK_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
@@ -3009,6 +3014,9 @@ void Player::GiveXP(uint32 xp, Unit* victim, float group_rate)
     uint8 level = getLevel();
 
     sScriptMgr->OnGivePlayerXP(this, xp, victim);
+
+    if (level < 66 && GetMapId() == 571)
+        return;
 
     // XP to money conversion processed in Player::RewardQuest
     if (level >= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
@@ -24556,6 +24564,8 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
     {
         AllowedLooterSet looters = item->GetAllowedLooters();
         Item* newitem = StoreNewItem(dest, item->itemid, true, item->randomPropertyId, looters);
+
+        sNinjaInquisitor->LogAutostoreLootItem(this, newitem);
 
         if (qitem)
         {

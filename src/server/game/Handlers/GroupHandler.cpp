@@ -32,6 +32,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "NinjaInquisitor.h"
 
 class Aura;
 
@@ -514,6 +515,8 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recvData)
         GetPlayer()->GetGroup()->BroadcastPacket(&data, false);
     else
         SendPacket(&data);
+
+    sNinjaInquisitor->LogRandomRoll(GetPlayer(), minimum, maximum, roll);
 }
 
 void WorldSession::HandleRaidTargetUpdateOpcode(WorldPacket& recvData)

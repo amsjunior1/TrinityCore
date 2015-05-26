@@ -34,6 +34,7 @@
 #include "Util.h"
 #include "LFGMgr.h"
 #include "UpdateFieldFlags.h"
+#include "NinjaInquisitor.h"
 
 Roll::Roll(ObjectGuid _guid, LootItem const& li) : itemGUID(_guid), itemid(li.itemid),
 itemRandomPropId(li.randomPropertyId), itemRandomSuffix(li.randomSuffix), itemCount(li.count),
@@ -838,6 +839,8 @@ void Group::SendLootRoll(ObjectGuid sourceGuid, ObjectGuid targetGuid, uint8 rol
         if (itr->second != NOT_VALID)
             p->GetSession()->SendPacket(&data);
     }
+
+    sNinjaInquisitor->LogItemRoll(roll.itemGUID, roll.itemid, targetGuid, rollNumber, rollType);
 }
 
 void Group::SendLootRollWon(ObjectGuid sourceGuid, ObjectGuid targetGuid, uint8 rollNumber, uint8 rollType, Roll const& roll)
@@ -861,6 +864,8 @@ void Group::SendLootRollWon(ObjectGuid sourceGuid, ObjectGuid targetGuid, uint8 
         if (itr->second != NOT_VALID)
             p->GetSession()->SendPacket(&data);
     }
+
+    sNinjaInquisitor->LogItemRollWon(roll.itemGUID, roll.itemid, targetGuid, rollNumber, rollType);
 }
 
 void Group::SendLootAllPassed(Roll const& roll)

@@ -184,9 +184,17 @@ class boss_blood_queen_lana_thel : public CreatureScript
                 instance->SetBossState(DATA_BLOOD_QUEEN_LANA_THEL, IN_PROGRESS);
                 CleanAuras();
 
+                GetDamageCounter()->CombatBegin(me);
+                GetHealingCounter()->CombatBegin(me, true);
+
                 DoCast(me, SPELL_SHROUD_OF_SORROW, true);
                 DoCast(me, SPELL_FRENZIED_BLOODTHIRST_VISUAL, true);
                 _creditBloodQuickening = instance->GetData(DATA_BLOOD_QUICKENING_STATE) == IN_PROGRESS;
+            }
+
+            void DamageTaken(Unit* attacker, uint32& damage) override
+            {
+                GetDamageCounter()->InputValue(attacker, damage);
             }
 
             void JustDied(Unit* killer) override
@@ -196,6 +204,9 @@ class boss_blood_queen_lana_thel : public CreatureScript
 
                 if (Is25ManRaid() && me->HasAura(SPELL_SHADOWS_FATE))
                     DoCastAOE(SPELL_BLOOD_INFUSION_CREDIT, true);
+
+                GetDamageCounter()->CombatComplete();
+                GetHealingCounter()->CombatComplete();
 
                 CleanAuras();
                 // Blah, credit the quest

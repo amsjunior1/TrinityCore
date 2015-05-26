@@ -30,6 +30,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "NinjaInquisitor.h"
 
 void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recvData)
 {
@@ -106,6 +107,8 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
     ObjectGuid guid = player->GetLootGUID();
     if (!guid)
         return;
+
+    sNinjaInquisitor->LogLootMoney(player);
 
     Loot* loot = NULL;
     bool shareMoney = true;
@@ -485,4 +488,6 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
 
     loot->NotifyItemRemoved(slotid);
     --loot->unlootedCount;
+
+    sNinjaInquisitor->LogLootMasterGiveItem(_player, target, newitem);
 }

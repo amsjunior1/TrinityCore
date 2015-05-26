@@ -293,6 +293,7 @@ class boss_deathbringer_saurfang : public CreatureScript
                 // oh just screw intro, enter combat - no exploits please
                 me->setActive(true);
                 DoZoneInCombat();
+                GetDamageCounter()->CombatBegin(me);
 
                 events.Reset();
                 events.SetPhase(PHASE_COMBAT);
@@ -320,6 +321,7 @@ class boss_deathbringer_saurfang : public CreatureScript
 
             void JustDied(Unit* /*killer*/) override
             {
+                GetDamageCounter()->CombatComplete();
             }
 
             void AttackStart(Unit* victim) override
@@ -351,8 +353,10 @@ class boss_deathbringer_saurfang : public CreatureScript
                     Talk(SAY_KILL);
             }
 
-            void DamageTaken(Unit* /*attacker*/, uint32& damage) override
+            void DamageTaken(Unit* attacker, uint32& damage) override
             {
+                GetDamageCounter()->InputValue(attacker, damage);
+
                 if (damage >= me->GetHealth())
                     damage = me->GetHealth() - 1;
 
@@ -365,6 +369,7 @@ class boss_deathbringer_saurfang : public CreatureScript
 
                 if (!_dead && me->GetHealth() < FightWonValue)
                 {
+                    GetDamageCounter()->CombatComplete();
                     _dead = true;
                     _JustDied();
                     _EnterEvadeMode();

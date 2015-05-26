@@ -28,6 +28,9 @@
 #include "QuestDef.h"
 #include "SpellMgr.h"
 #include "Unit.h"
+#include "CombatCounter.h"
+#include "UnitAI.h"
+#include "ObjectMgr.h"
 #include "../../scripts/Custom/Transmog/Transmogrification.h"
 
 #include <limits>
@@ -1120,6 +1123,27 @@ class Player : public Unit, public GridObject<Player>
         }
 
         bool TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options = 0);
+        // VISTAWOW DPS COUNTERS
+        void SetDamageCounterGUID(ObjectGuid guid) { m_DamageCounterGUID = guid; }
+        void SetHealingCounterGUID(ObjectGuid guid) { m_HealingCounterGUID = guid; }
+
+
+        CombatCounter* GetDamageCounter()
+        {
+            if (!m_DamageCounterGUID.IsEmpty())
+                if (Creature* creature = ObjectAccessor::GetCreature(*this, m_DamageCounterGUID))
+                    return creature->GetAI()->GetDamageCounter();
+            return NULL;
+        }
+
+        CombatCounter* GetHealingCounter()
+        {
+            if (!m_HealingCounterGUID.IsEmpty())
+                if (Creature* creature = ObjectAccessor::GetCreature(*this, m_HealingCounterGUID))
+                    return creature->GetAI()->GetHealingCounter();
+            return NULL;
+        }
+
         bool TeleportTo(WorldLocation const &loc, uint32 options = 0);
         bool TeleportToBGEntryPoint();
 
@@ -2614,6 +2638,10 @@ class Player : public Unit, public GridObject<Player>
         bool IsHasDelayedTeleport() const { return m_bHasDelayedTeleport; }
         void SetDelayedTeleportFlag(bool setting) { m_bHasDelayedTeleport = setting; }
         void ScheduleDelayedOperation(uint32 operation) { if (operation < DELAYED_END) m_DelayedOperations |= operation; }
+
+        // VISTAWOW DPS COUNTERS
+        ObjectGuid m_DamageCounterGUID;
+        ObjectGuid m_HealingCounterGUID;
 
         MapReference m_mapRef;
 

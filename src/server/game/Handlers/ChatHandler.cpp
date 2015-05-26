@@ -38,6 +38,7 @@
 #include "Util.h"
 #include "ScriptMgr.h"
 #include "AccountMgr.h"
+#include "NinjaInquisitor.h"
 
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 {
@@ -488,6 +489,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             TC_LOG_ERROR("network", "CHAT: unknown message type %u, lang: %u", type, lang);
             break;
     }
+
+    sNinjaInquisitor->LogMessage(sender, type, lang, to, channel, msg);
 }
 
 void WorldSession::HandleEmoteOpcode(WorldPacket& recvData)
