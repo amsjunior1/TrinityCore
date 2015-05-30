@@ -22,6 +22,7 @@ Comment: All quest related commands
 Category: commandscripts
 EndScriptData */
 
+#include "DisableMgr.h"
 #include "Chat.h"
 #include "ObjectMgr.h"
 #include "Player.h"
@@ -168,6 +169,13 @@ public:
         uint32 entry = atoul(cId);
 
         Quest const* quest = sObjectMgr->GetQuestTemplate(entry);
+
+        if (DisableMgr::IsDisabledFor(DISABLE_TYPE_QUEST_COMPLETE, entry, player))
+        {
+            handler->PSendSysMessage(LANG_COMMAND_QUEST_COMPLETE_DISABLED);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
 
         // If player doesn't have the quest
         if (!quest || player->GetQuestStatus(entry) == QUEST_STATUS_NONE)

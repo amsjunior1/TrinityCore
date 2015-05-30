@@ -42,7 +42,7 @@ namespace
 
     DisableMap m_DisableMap;
 
-    uint8 MAX_DISABLE_TYPES = 8;
+    uint8 MAX_DISABLE_TYPES = 9;
 }
 
 void LoadDisables()
@@ -375,6 +375,7 @@ bool IsDisabledFor(DisableType type, uint32 entry, Unit const* unit, uint8 flags
                 if (player->IsGameMaster())
                     return false;
             return true;
+        case DISABLE_TYPE_QUEST_COMPLETE:
         case DISABLE_TYPE_BATTLEGROUND:
         case DISABLE_TYPE_OUTDOORPVP:
         case DISABLE_TYPE_ACHIEVEMENT_CRITERIA:
