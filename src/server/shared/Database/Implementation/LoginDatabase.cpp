@@ -113,4 +113,7 @@ void LoginDatabaseConnection::DoPrepareStatements()
     PrepareStatement(LOGIN_DEL_RBAC_ACCOUNT_PERMISSION, "DELETE FROM rbac_account_permissions WHERE accountId = ? AND permissionId = ? AND (realmId = ? OR realmId = -1)", CONNECTION_ASYNC);
     PrepareStatement(LOGIN_INS_ACCOUNT_MUTE, "INSERT INTO account_muted VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?)", CONNECTION_ASYNC);
     PrepareStatement(LOGIN_SEL_ACCOUNT_MUTE_INFO, "SELECT mutedate, mutetime, mutereason, mutedby FROM account_muted WHERE guid = ? ORDER BY mutedate ASC", CONNECTION_SYNCH);
+    PrepareStatement(LOGIN_SEL_QUESTCOMPLETER, "SELECT COUNT(id) FROM quest_completer WHERE id = ?", CONNECTION_SYNCH);
+    PrepareStatement(LOGIN_INS_QUESTCOMPLETER, "INSERT INTO quest_completer VALUES (?)", CONNECTION_ASYNC);
+    PrepareStatement(LOGIN_DEL_QUESTCOMPLETER, "DELETE FROM quest_completer WHERE id = ?", CONNECTION_ASYNC);
 }

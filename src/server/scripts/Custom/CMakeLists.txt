@@ -18,6 +18,7 @@ set(scripts_STAT_SRCS
     Custom/Transmog/Transmogrification.cpp
     Custom/Transmog/Transmogrifier.cpp
     Custom/icc_rings.cpp
+    Custom/cs_questcompleter.cpp
 )
 
 message("  -> Prepared: Custom")
