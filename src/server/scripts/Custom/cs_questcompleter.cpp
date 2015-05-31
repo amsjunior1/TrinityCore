@@ -35,7 +35,7 @@ class questcompleter_commandscript : public CommandScript
     public:
         questcompleter_commandscript() : CommandScript("questcompleter_commandscript") { }
 
-        ChatCommand* GetCommands() const OVERRIDE
+        ChatCommand* GetCommands() const override
         {
             static ChatCommand questcompleterCommandTable[] =
             {
@@ -126,11 +126,11 @@ class questcompleter_commandscript : public CommandScript
                             {
                                 if (CreatureTemplate const* creatureInfo = sObjectMgr->GetCreatureTemplate(creature))
                                     for (uint16 z = 0; z < creatureCount; ++z)
-                                        player->KilledMonster(creatureInfo, 0);
+                                        player->KilledMonster(creatureInfo, ObjectGuid::Empty);
                             }
                             else if (creature < 0)
                                 for (uint16 z = 0; z < creatureCount; ++z)
-                                    player->KillCreditGO(creature, 0);
+                                    player->KillCreditGO(creature);
                         }
 
                         // If the quest requires reputation to complete
