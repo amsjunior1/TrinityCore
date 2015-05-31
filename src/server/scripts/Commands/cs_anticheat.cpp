@@ -115,21 +115,11 @@ public:
             return false;
 
         // teleport both to jail.
-        pTarget->TeleportTo(1,16226.5f,16403.6f,-64.5f,3.2f);
-        handler->GetSession()->GetPlayer()->TeleportTo(1,16226.5f,16403.6f,-64.5f,3.2f);
+        pTarget->TeleportTo(1, 16226.5f, 16403.6f, -64.5f, 3.2f);
+        handler->GetSession()->GetPlayer()->TeleportTo(1, 16226.5f, 16403.6f, -64.5f, 3.2f);
 
-        WorldLocation loc;
-
-        // the player should be already there, but no :(
-        // pTarget->GetPosition(&loc);
-
-        loc.m_mapId = 1;
-        loc.m_positionX = 16226.5f;
-        loc.m_positionY = 16403.6f;
-        loc.m_positionZ = -64.5f;
-        loc.m_orientation = 3.2f;
-
-        pTarget->SetHomebind(loc,876);
+        WorldLocation loc(1, 16226.5f, 16403.6f, -64.5f, 3.2f);
+        pTarget->SetHomebind(loc, 876);
         return true;
     }
 
