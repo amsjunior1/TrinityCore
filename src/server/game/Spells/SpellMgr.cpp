@@ -3608,6 +3608,7 @@ void SpellMgr::LoadSpellInfoCorrections()
                 break;
             case 73655: // Harvest Soul
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_DONE_BONUS;
+                spellInfo->AttributesEx6 |= SPELL_ATTR6_NO_DONE_PCT_DAMAGE_MODS;
                 break;
             case 73540: // Summon Shadow Trap
                 spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(23); // 90 seconds
