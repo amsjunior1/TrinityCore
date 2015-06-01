@@ -45,7 +45,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
-
+#include "BattlefieldMgr.h"
 
 class LoginQueryHolder : public SQLQueryHolder
 {
@@ -988,6 +988,13 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     m_playerLoading = false;
 
+    if (sWorld->getBoolConfig(CONFIG_WINTERGRASP_ENABLE))
+        if (Battlefield* battlefieldWG = sBattlefieldMgr->GetBattlefieldByBattleId(BATTLEFIELD_BATTLEID_WG))
+        {
+            battlefieldWG->SendInitWorldStatesTo(pCurrChar);
+            pCurrChar->SendUpdateWorldState(4354, uint32(time(NULL)) + (battlefieldWG->IsWarTime() ? battlefieldWG->GetTimer() : 0));
+            pCurrChar->SendInitWorldStates(pCurrChar->GetZoneId(), pCurrChar->GetAreaId());
+        }
     // Handle Login-Achievements (should be handled after loading)
     _player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_ON_LOGIN, 1);
 

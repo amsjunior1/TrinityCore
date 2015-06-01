@@ -314,6 +314,7 @@ class Battlefield : public ZoneScript
         virtual void DoCompleteOrIncrementAchievement(uint32 /*achievement*/, Player* /*player*/, uint8 /*incrementNumber = 1*/) { }
 
         /// Send all worldstate data to all player in zone.
+        virtual void SendInitWorldStatesTo(Player* player) = 0;
         virtual void SendInitWorldStatesToAll() = 0;
         virtual void FillInitialWorldStates(WorldPacket& /*data*/) = 0;
 
