@@ -5860,6 +5860,9 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
         else
             damage = std::max(int32(damage * GetDonePct()), 0);
 
+        if (Player* modOwner = caster->GetSpellModOwner())
+            modOwner->ApplySpellMod(GetSpellInfo()->Id, SPELLMOD_DOT, damage);
+
         damage = target->SpellDamageBonusTaken(caster, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());
 
         // Calculate armor mitigation
@@ -6162,6 +6165,9 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
             damage = caster->SpellHealingBonusDone(target, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount()) * caster->SpellHealingPctDone(target, m_spellInfo);
         else
             damage = std::max(int32(damage * GetDonePct()), 0);
+
+        if (Player* modOwner = caster->GetSpellModOwner())
+            modOwner->ApplySpellMod(GetSpellInfo()->Id, SPELLMOD_DOT, damage);
 
         damage = target->SpellHealingBonusTaken(caster, GetSpellInfo(), damage, DOT, GetBase()->GetStackAmount());
     }
