@@ -664,6 +664,8 @@ Player::Player(WorldSession* session): Unit(true)
     m_speakTime = 0;
     m_speakCount = 0;
 
+    // VISTAWOW ANTICHEAT
+    m_anticheat = new AntiCheat(this);
     // VISTAWOW DPS COUNTERS
     m_DamageCounterGUID = ObjectGuid::Empty;
     m_HealingCounterGUID = ObjectGuid::Empty;
@@ -946,6 +948,9 @@ Player::~Player()
 
     for (size_t x = 0; x < ItemSetEff.size(); x++)
         delete ItemSetEff[x];
+
+    // VISTAWOW ANTICHEAT
+    delete m_anticheat;
 
     delete m_declinedname;
     delete m_runes;
@@ -2162,6 +2167,8 @@ void Player::SendTeleportAckPacket()
 
 bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options)
 {
+    // VISTAWOW ANTICHEAT
+    GetAntiCheat()->SetSleep(7000);
     if (!MapManager::IsValidMapCoord(mapid, x, y, z, orientation))
     {
         TC_LOG_ERROR("maps", "TeleportTo: invalid map (%d) or invalid coordinates (X: %f, Y: %f, Z: %f, O: %f) given when teleporting player (GUID: %u, name: %s, map: %d, X: %f, Y: %f, Z: %f, O: %f).",
@@ -26245,6 +26252,67 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
         stmt->setUInt64(2, itr->second);
         trans->Append(stmt);
     }
+// VISTAWOW ANTICHEAT
+bool AntiCheat::BlockMovementOperation(MovementInfo* movementInfo, uint16 /* opcode */)
+{
+    int32 MSTime_delta = 1500;
+    if (LastClientTime != 0)
+        MSTime_delta = getMSTimeDiff(LastClientTime, movementInfo->time);
+    LastClientTime = movementInfo->time;
+
+    if (WakeUpTime > getMSTime())
+        return false;
+
+    if (MSTime_delta < 0)
+        MSTime_delta = 0;
+
+    // if not in a transport
+    // if not riding a taxi
+    // if not in SOTA (causing false positive)
+    // if not in Stormwind-Ironforge Subway (causing false positive)
+    if (!plrMover->GetVehicle() && !plrMover->GetTransport() && !plrMover->m_taxi.GetTaxiDestination() && (plrMover->GetMapId() != 607) && (plrMover->GetMapId() != 369))
+    {
+        UnitMoveType move_type;
+
+        if (movementInfo->flags & MOVEMENTFLAG_FLYING)
+            move_type = movementInfo->flags & MOVEMENTFLAG_BACKWARD ? MOVE_FLIGHT_BACK : MOVE_FLIGHT;
+        else if (movementInfo->flags & MOVEMENTFLAG_SWIMMING)
+            move_type = movementInfo->flags & MOVEMENTFLAG_BACKWARD ? MOVE_SWIM_BACK : MOVE_SWIM;
+        else if (movementInfo->flags & MOVEMENTFLAG_WALKING)
+            move_type = MOVE_WALK;
+        else
+            move_type = movementInfo->flags & MOVEMENTFLAG_BACKWARD ? MOVE_RUN_BACK : MOVE_RUN;
+
+        const float current_speed = plrMover->GetSpeed(move_type);
+
+        const float delta_x    = plrMover->GetPositionX() - movementInfo->pos.GetPositionX();
+        const float delta_y    = plrMover->GetPositionY() - movementInfo->pos.GetPositionY();
+        const float delta_z    = plrMover->GetPositionZ() - movementInfo->pos.GetPositionZ();
+        const float real_delta = delta_x * delta_x + delta_y * delta_y;
+
+        const float time_delta = MSTime_delta < 1500 ? float(MSTime_delta) / 1000.0f : 1.5f;
+
+        const bool no_fly_auras = !(plrMover->HasAuraType(SPELL_AURA_FLY) || plrMover->HasAuraType(SPELL_AURA_MOD_INCREASE_VEHICLE_FLIGHT_SPEED) || plrMover->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) || plrMover->HasAuraType(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED) || plrMover->HasAuraType(SPELL_AURA_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS) || plrMover->HasAuraType(SPELL_AURA_MOD_FLIGHT_SPEED_NOT_STACK));
+        const bool no_swim_flags = (movementInfo->flags & MOVEMENTFLAG_SWIMMING) == 0;
+        const float tg_z = (real_delta != 0 && no_fly_auras && no_swim_flags) ? (pow(delta_z, 2) / real_delta) : -99999.9f;
+
+        const float allowed_delta = pow(current_speed * time_delta, 2) + (tg_z > 2.2f ? pow(delta_z, 2) / 2.37f : 0.0f) + 2.0f;
+
+        if (real_delta > allowed_delta)
+        {
+            if ((++TriggerCount >= 3) || ((real_delta > 300.0f) && (real_delta > (allowed_delta * 3.0f))))
+            {
+                WorldPacket data;
+                plrMover->SetUnitMovementFlags(0);
+                plrMover->SendTeleportAckPacket();
+                plrMover->BuildHeartBeatMsg(&data);
+                plrMover->SendMessageToSet(&data, true);
+                return true;
+            }
+        } else
+            TriggerCount = 0;
+    }
+    return false;
 }
 
 bool Player::IsInWhisperWhiteList(ObjectGuid guid)

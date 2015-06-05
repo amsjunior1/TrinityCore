@@ -349,6 +349,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     if (m_clientTimeDelay == 0)
         m_clientTimeDelay = mstime - movementInfo.time;
 
+    // VISTAWOW ANTICHEAT
+    if (plrMover)
+        if (plrMover->GetAntiCheat()->BlockMovementOperation(&movementInfo, opcode))
+            return;
+
     /* process position-change */
     WorldPacket data(opcode, recvData.size());
     movementInfo.time = movementInfo.time + m_clientTimeDelay + MOVEMENT_PACKET_TIME_DELAY;
