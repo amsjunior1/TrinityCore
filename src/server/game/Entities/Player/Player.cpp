@@ -26252,7 +26252,7 @@ void Player::_SaveInstanceTimeRestrictions(SQLTransaction& trans)
         stmt->setUInt64(2, itr->second);
         trans->Append(stmt);
     }
-{
+}
 
 // VISTAWOW ANTICHEAT
 bool AntiCheat::BlockMovementOperation(MovementInfo* movementInfo, uint16 /* opcode */)
