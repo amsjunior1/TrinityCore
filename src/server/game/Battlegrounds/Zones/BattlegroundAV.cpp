@@ -1495,7 +1495,7 @@ void BattlegroundAV::ResetBGSubclass()
 
 bool BattlegroundAV::CheckAchievementCriteriaMeet(uint32 criteriaId, Player const* source, Unit const* target, uint32 miscValue)
 {
-    uint32 team = source->GetTeam();
+    uint32 team = source->GetBGTeam();
     switch (criteriaId)
     {
         case BG_CRITERIA_CHECK_EVERYTHING_COUNTS:
