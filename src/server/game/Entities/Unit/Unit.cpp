@@ -16024,8 +16024,19 @@ void Unit::RemoveCharmedBy(Unit* charmer)
 
 void Unit::RestoreFaction()
 {
-    if (GetTypeId() == TYPEID_PLAYER)
-        ToPlayer()->setFactionForRace(getRace());
+
+    if (Player* player = ToPlayer())
+    {
+        if (player->InBattleground() && !player->InArena())
+        {
+            if (player->GetBGTeam() == ALLIANCE)
+                player->setFaction(1);
+            else
+                player->setFaction(2);
+        }
+        else
+            player->setFactionForRace(getRace());
+    }
     else
     {
         if (HasUnitTypeMask(UNIT_MASK_MINION))

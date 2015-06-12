@@ -579,7 +579,7 @@ Player* Battleground::_GetPlayerForTeam(uint32 teamId, BattlegroundPlayerMap::co
     {
         uint32 team = itr->second.Team;
         if (!team)
-            team = player->GetTeam();
+            team = player->GetBGTeam();
         if (team != teamId)
             player = NULL;
     }
@@ -676,7 +676,8 @@ void Battleground::RewardReputationToTeam(uint32 faction_id, uint32 Reputation, 
         uint32 repGain = Reputation;
         AddPct(repGain, player->GetTotalAuraModifier(SPELL_AURA_MOD_REPUTATION_GAIN));
         AddPct(repGain, player->GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_FACTION_REPUTATION_GAIN, faction_id));
-        player->GetReputationMgr().ModifyReputation(factionEntry, repGain);
+        if (player->GetTeam() == player->GetBGTeam())
+            player->GetReputationMgr().ModifyReputation(factionEntry, repGain);
     }
 }
 
@@ -950,6 +951,9 @@ void Battleground::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
         // reset destination bg team
         player->SetBGTeam(0);
 
+        player->setFactionForRace(player->getRace());
+        player->InitDisplayIds();
+
         if (Transport)
             player->TeleportToBGEntryPoint();
 
@@ -1095,6 +1099,30 @@ void Battleground::AddOrSetPlayerToCorrectBgGroup(Player* player, uint32 team)
                 }
         }
     }
+
+    if (!isArena())
+    {
+        if (team == ALLIANCE) {
+            player->setFaction(1);
+
+            if (player->GetTeam() != player->GetBGTeam()) {
+                static const uint32 displayids[] = { 20580, 20320, 20318, 19723, 19724, 20317, 20323, 21105 };
+                uint8 rand = urand(0, 7);
+                player->SetDisplayId(displayids[rand]);
+                player->SetNativeDisplayId(displayids[rand]);
+            }
+        }
+        else {
+            player->setFaction(2);
+
+            if (player->GetTeam() != player->GetBGTeam()) {
+                static const uint32 displayids[] = { 20319, 20584, 20578, 20322, 20316, 21267, 20321, 20582, 20583 };
+                uint8 rand = urand(0, 8);
+                player->SetDisplayId(displayids[rand]);
+                player->SetNativeDisplayId(displayids[rand]);
+            }
+        }
+    }
 }
 
 // This method should be called when player logs into running battleground
@@ -1110,6 +1138,10 @@ void Battleground::EventPlayerLoggedIn(Player* player)
             break;
         }
     }
+
+    if (!IsPlayerInBattleground(guid))
+        return;
+
     m_Players[guid].OfflineRemoveTime = 0;
     PlayerAddedToBGCheckIfBGIsRunning(player);
     // if battleground is starting, then add preparation aura
@@ -1698,7 +1730,7 @@ void Battleground::HandleKillPlayer(Player* victim, Player* killer)
             if (!creditedPlayer || creditedPlayer == killer)
                 continue;
 
-            if (creditedPlayer->GetTeam() == killer->GetTeam() && creditedPlayer->IsAtGroupRewardDistance(victim))
+            if (creditedPlayer->GetBGTeam() == killer->GetBGTeam() && creditedPlayer->IsAtGroupRewardDistance(victim))
                 UpdatePlayerScore(creditedPlayer, SCORE_HONORABLE_KILLS, 1);
         }
     }
@@ -1793,7 +1825,7 @@ void Battleground::SetBgRaid(uint32 TeamID, Group* bg_raid)
 
 WorldSafeLocsEntry const* Battleground::GetClosestGraveYard(Player* player)
 {
-    return sObjectMgr->GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetTeam());
+    return sObjectMgr->GetClosestGraveYard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId(), player->GetBGTeam());
 }
 
 void Battleground::StartTimedAchievement(AchievementCriteriaTimedTypes type, uint32 entry)
