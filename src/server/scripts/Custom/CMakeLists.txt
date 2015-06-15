@@ -19,6 +19,7 @@ set(scripts_STAT_SRCS
     Custom/Transmog/Transmogrifier.cpp
     Custom/icc_rings.cpp
     Custom/cs_questcompleter.cpp
+    Custom/mod_ArenaWatcher.cpp
 )
 
 message("  -> Prepared: Custom")

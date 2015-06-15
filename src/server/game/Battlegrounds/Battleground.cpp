@@ -957,6 +957,7 @@ void Battleground::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
         if (Transport)
             player->TeleportToBGEntryPoint();
 
+        sScriptMgr->OnPlayerRemoveFromBattleground(player, this);
         TC_LOG_DEBUG("bg.battleground", "Removed player %s from Battleground.", player->GetName().c_str());
     }
 

@@ -1427,6 +1427,7 @@ void AddSC_PWS_Transmogrification();
 void AddSC_CS_Transmogrification();
 void AddSC_icc_rings();
 void AddSC_questcompleter_commandscript();
+void AddSC_Mod_ArenaWatcher();
 #endif
 
 void AddCustomScripts()
@@ -1439,5 +1440,6 @@ void AddCustomScripts()
     AddSC_CS_Transmogrification();
     AddSC_icc_rings();
     AddSC_questcompleter_commandscript();
+    AddSC_Mod_ArenaWatcher();
 #endif
 }

@@ -40,6 +40,8 @@
 #include "AccountMgr.h"
 #include "NinjaInquisitor.h"
 
+bool IsWatcher(uint32 guid);
+
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
 {
     uint32 type;
@@ -250,6 +252,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             if (sender->getLevel() < sWorld->getIntConfig(CONFIG_CHAT_SAY_LEVEL_REQ))
             {
                 SendNotification(GetTrinityString(LANG_SAY_REQ), sWorld->getIntConfig(CONFIG_CHAT_SAY_LEVEL_REQ));
+                return;
+            }
+
+            if (IsWatcher(sender->GetGUIDLow()))
+            {
+                SendNotification(GetTrinityString(LANG_GM_SILENCE), sender->GetName().c_str());
                 return;
             }
 

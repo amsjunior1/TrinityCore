@@ -3286,7 +3286,10 @@ void BattlegroundMap::RemoveAllPlayers()
         for (MapRefManager::iterator itr = m_mapRefManager.begin(); itr != m_mapRefManager.end(); ++itr)
             if (Player* player = itr->GetSource())
                 if (!player->IsBeingTeleportedFar())
+                {
                     player->TeleportTo(player->GetBattlegroundEntryPoint());
+                    sScriptMgr->OnPlayerRemoveFromBattleground(player, m_bg);
+                }
 }
 
 Creature* Map::GetCreature(ObjectGuid guid)

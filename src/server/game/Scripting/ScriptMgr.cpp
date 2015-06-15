@@ -1307,6 +1307,11 @@ void ScriptMgr::OnPlayerBindToInstance(Player* player, Difficulty difficulty, ui
     FOREACH_SCRIPT(PlayerScript)->OnBindToInstance(player, difficulty, mapid, permanent);
 }
 
+void ScriptMgr::OnPlayerRemoveFromBattleground(Player* player, Battleground* bg)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerRemoveFromBattleground(player, bg);
+}
+
 void ScriptMgr::OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newArea)
 {
     FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newZone, newArea);
