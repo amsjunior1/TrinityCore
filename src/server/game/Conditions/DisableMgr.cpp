@@ -414,6 +414,11 @@ bool IsPathfindingEnabled(uint32 mapId)
         && !IsDisabledFor(DISABLE_TYPE_MMAP, mapId, NULL, MMAP_DISABLE_PATHFINDING);
 }
 
+bool istrimmable(wchar_t c)
+{
+    return std::wstring(L"\t ,.;!+-?").find(c) != std::wstring::npos;
+}
+
 void FilterMessage(std::string &message)
 {
     std::wstring _message;
