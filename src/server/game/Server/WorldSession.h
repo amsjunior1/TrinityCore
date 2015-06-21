@@ -403,6 +403,8 @@ class WorldSession
         // Account mute time
         time_t m_muteTime;
 
+        std::string m_lastMessage;
+
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         LocaleConstant GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }

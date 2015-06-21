@@ -38,6 +38,7 @@
 #include "Util.h"
 #include "ScriptMgr.h"
 #include "AccountMgr.h"
+#include "DisableMgr.h"
 #include "NinjaInquisitor.h"
 
 bool IsWatcher(uint32 guid);
@@ -225,6 +226,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             // Strip invisible characters for non-addon messages
             if (sWorld->getBoolConfig(CONFIG_CHAT_FAKE_MESSAGE_PREVENTING))
                 stripLineInvisibleChars(msg);
+
+            if (strcmp(sender->GetSession()->m_lastMessage.c_str(), msg.c_str()) != 0)
+                sender->GetSession()->m_lastMessage = msg;
+            else
+                return;
+
+            DisableMgr::FilterMessage(msg);
 
             if (sWorld->getIntConfig(CONFIG_CHAT_STRICT_LINK_CHECKING_SEVERITY) && !ChatHandler(this).isValidChatMessage(msg.c_str()))
             {

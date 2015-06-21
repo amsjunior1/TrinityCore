@@ -42,7 +42,10 @@ namespace
 
     DisableMap m_DisableMap;
 
-    uint8 MAX_DISABLE_TYPES = 9;
+    typedef std::set<std::wstring> DisableMessageMap;
+    DisableMessageMap m_DisableMessageMap;
+
+    uint8 MAX_DISABLE_TYPES = 10;
 }
 
 void LoadDisables()
@@ -54,6 +57,7 @@ void LoadDisables()
         itr->second.clear();
 
     m_DisableMap.clear();
+    m_DisableMessageMap.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT sourceType, entry, flags, params_0, params_1 FROM disables");
 
@@ -250,6 +254,16 @@ void LoadDisables()
                 }
                 break;
             }
+            case DISABLE_TYPE_MESSAGE:
+            {
+                std::wstring wparam;
+                if (Utf8toWStr(params_0, wparam))
+                {
+                    std::transform(wparam.begin(), wparam.end(), wparam.begin(), ::toupper);
+                    m_DisableMessageMap.insert(wparam);
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -380,6 +394,7 @@ bool IsDisabledFor(DisableType type, uint32 entry, Unit const* unit, uint8 flags
         case DISABLE_TYPE_OUTDOORPVP:
         case DISABLE_TYPE_ACHIEVEMENT_CRITERIA:
         case DISABLE_TYPE_MMAP:
+        case DISABLE_TYPE_MESSAGE:
             return true;
         case DISABLE_TYPE_VMAP:
            return (flags & itr->second.flags) != 0;
@@ -397,6 +412,45 @@ bool IsPathfindingEnabled(uint32 mapId)
 {
     return sWorld->getBoolConfig(CONFIG_ENABLE_MMAPS)
         && !IsDisabledFor(DISABLE_TYPE_MMAP, mapId, NULL, MMAP_DISABLE_PATHFINDING);
+}
+
+void FilterMessage(std::string &message)
+{
+    std::wstring _message;
+    std::vector<std::wstring> tokens;
+
+    if (!Utf8toWStr(message, _message))
+    {
+        message = "";
+        return;
+    }
+
+    std::wstringstream ss(_message);
+    std::copy(std::istream_iterator<std::wstring, wchar_t>(ss), std::istream_iterator<std::wstring, wchar_t>(), std::back_inserter<std::vector<std::wstring> >(tokens));
+
+    for (std::vector<std::wstring>::iterator itr = tokens.begin(); itr != tokens.end(); ++itr)
+    {
+        std::wstring token = *itr;
+        std::transform(token.begin(), token.end(), token.begin(), ::toupper);
+        token.erase(token.begin(), std::find_if(token.begin(), token.end(), std::not1(std::ptr_fun(istrimmable))));
+        token.erase(std::find_if(token.rbegin(), token.rend(), std::not1(std::ptr_fun(istrimmable))).base(), token.end());
+        if (m_DisableMessageMap.find(token) != m_DisableMessageMap.end())
+            *itr = std::wstring(std::min(4, (int)(*itr).length()), '*');
+    }
+
+    ss.clear();
+    ss.str(L"");
+
+    copy(tokens.begin(), tokens.end(), std::ostream_iterator<std::wstring, wchar_t>(ss, L" "));
+
+    _message = ss.str();
+
+    WStrToUtf8(_message, message);
+
+    if (!message.empty())
+    {
+        message.resize(message.length() - 1);
+    }
 }
 
 } // Namespace
