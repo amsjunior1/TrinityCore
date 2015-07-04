@@ -4187,12 +4187,27 @@ bool Player::Has310Flyer(bool checkAllSpells, uint32 excludeSpellId)
 
 void Player::RemoveArenaSpellCooldowns(bool removeActivePetCooldowns)
 {
+    std::vector<uint32> categoriesCache;
     // remove cooldowns on spells that have < 10 min CD
-    GetSpellHistory()->ResetCooldowns([](SpellHistory::CooldownStorageType::iterator itr) -> bool
+    GetSpellHistory()->ResetCooldowns([&categoriesCache](SpellHistory::CooldownStorageType::iterator itr) -> bool
     {
         SpellInfo const* spellInfo = sSpellMgr->EnsureSpellInfo(itr->first);
-        return spellInfo->RecoveryTime < 10 * MINUTE * IN_MILLISECONDS && spellInfo->CategoryRecoveryTime < 10 * MINUTE * IN_MILLISECONDS;
+        if (spellInfo->RecoveryTime < 10 * MINUTE * IN_MILLISECONDS && spellInfo->CategoryRecoveryTime < 10 * MINUTE * IN_MILLISECONDS)
+        {
+            if (uint32 category = spellInfo->GetCategory())
+                categoriesCache.push_back(category);
+            return true;
+        }
+        return false;
     }, true);
+
+    for (uint32 category : categoriesCache)
+    {
+        GetSpellHistory()->ResetCooldowns([category](SpellHistory::CooldownStorageType::iterator itr) -> bool
+        {
+            return sSpellMgr->EnsureSpellInfo(itr->first)->GetCategory() == category;
+        }, true);
+    }
 
     // pet cooldowns
     if (removeActivePetCooldowns)
