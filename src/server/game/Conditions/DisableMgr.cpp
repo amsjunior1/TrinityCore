@@ -424,11 +424,6 @@ void FilterMessage(std::string &message)
     {
         message = std::regex_replace(message, itr, " *** ");
     }
-
-    if (!message.empty())
-    {
-        message.resize(message.length() - 1);
-    }
 }
 
 } // Namespace
