@@ -492,7 +492,7 @@ class boss_sindragosa : public CreatureScript
                             me->GetMotionMaster()->MovePoint(POINT_AIR_PHASE_FAR, SindragosaAirPosFar);
                             break;
                         case EVENT_ICE_TOMB:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, FrostBeaconSelector(me)))
+                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 3, FrostBeaconSelector(me)))
                             {
                                 Talk(EMOTE_WARN_FROZEN_ORB, target);
                                 me->CastCustomSpell(SPELL_ICE_TOMB_TARGET, SPELLVALUE_MAX_TARGETS, 1, nullptr, TRIGGERED_FULL_MASK);
