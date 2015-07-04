@@ -16,6 +16,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <regex>
 #include "DisableMgr.h"
 #include "AchievementMgr.h"
 #include "ObjectMgr.h"
@@ -42,7 +43,7 @@ namespace
 
     DisableMap m_DisableMap;
 
-    typedef std::set<std::wstring> DisableMessageMap;
+    typedef std::vector<std::regex> DisableMessageMap;
     DisableMessageMap m_DisableMessageMap;
 
     uint8 MAX_DISABLE_TYPES = 10;
@@ -256,11 +257,14 @@ void LoadDisables()
             }
             case DISABLE_TYPE_MESSAGE:
             {
-                std::wstring wparam;
-                if (Utf8toWStr(params_0, wparam))
+                try
                 {
-                    std::transform(wparam.begin(), wparam.end(), wparam.begin(), ::toupper);
-                    m_DisableMessageMap.insert(wparam);
+                    std::regex reg(params_0, std::regex::icase);
+                    m_DisableMessageMap.push_back(reg);
+                }
+                catch (std::regex_error& e)
+                {
+                    TC_LOG_ERROR("sql.sql", "Invalid regular expression at entry %d. Error: %s", entry, e.what());
                 }
                 break;
             }
@@ -414,43 +418,12 @@ bool IsPathfindingEnabled(uint32 mapId)
         && !IsDisabledFor(DISABLE_TYPE_MMAP, mapId, NULL, MMAP_DISABLE_PATHFINDING);
 }
 
-bool istrimmable(wchar_t c)
-{
-    return std::wstring(L"\t ,.;!+-?").find(c) != std::wstring::npos;
-}
-
 void FilterMessage(std::string &message)
 {
-    std::wstring _message;
-    std::vector<std::wstring> tokens;
-
-    if (!Utf8toWStr(message, _message))
+    for (auto itr : m_DisableMessageMap)
     {
-        message = "";
-        return;
+        message = std::regex_replace(message, itr, " *** ");
     }
-
-    std::wstringstream ss(_message);
-    std::copy(std::istream_iterator<std::wstring, wchar_t>(ss), std::istream_iterator<std::wstring, wchar_t>(), std::back_inserter<std::vector<std::wstring> >(tokens));
-
-    for (std::vector<std::wstring>::iterator itr = tokens.begin(); itr != tokens.end(); ++itr)
-    {
-        std::wstring token = *itr;
-        std::transform(token.begin(), token.end(), token.begin(), ::toupper);
-        token.erase(token.begin(), std::find_if(token.begin(), token.end(), std::not1(std::ptr_fun(istrimmable))));
-        token.erase(std::find_if(token.rbegin(), token.rend(), std::not1(std::ptr_fun(istrimmable))).base(), token.end());
-        if (m_DisableMessageMap.find(token) != m_DisableMessageMap.end())
-            *itr = std::wstring(std::min(4, (int)(*itr).length()), '*');
-    }
-
-    ss.clear();
-    ss.str(L"");
-
-    copy(tokens.begin(), tokens.end(), std::ostream_iterator<std::wstring, wchar_t>(ss, L" "));
-
-    _message = ss.str();
-
-    WStrToUtf8(_message, message);
 
     if (!message.empty())
     {
