@@ -891,27 +891,6 @@ enum CurrencyItems
     ITEM_ARENA_POINTS_ID    = 43307
 };
 
-// VISTAWOW ANTICHEAT
-class AntiCheat
-{
-    private:
-        Player* plrMover;
-        time_t WakeUpTime;
-        time_t LastClientTime;
-        uint32 TriggerCount;
-    public:
-        AntiCheat(Player *player) {
-            plrMover = player;
-            WakeUpTime = LastClientTime = 0;
-            TriggerCount = 0;
-        };
-        ~AntiCheat() { };
-        void SetSleep(uint32 delta) {
-            WakeUpTime = getMSTime() + delta;
-        };
-        bool BlockMovementOperation(MovementInfo* movementInfo, uint16 opcode);
-};
-
 enum ReferAFriendError
 {
     ERR_REFER_A_FRIEND_NONE                          = 0x00,
@@ -1144,9 +1123,6 @@ class Player : public Unit, public GridObject<Player>
         }
 
         bool TeleportTo(uint32 mapid, float x, float y, float z, float orientation, uint32 options = 0);
-
-        // VISTAWOW ANTICHEAT
-        AntiCheat* GetAntiCheat() { return m_anticheat; };
         // VISTAWOW DPS COUNTERS
         void SetDamageCounterGUID(ObjectGuid guid) { m_DamageCounterGUID = guid; }
         void SetHealingCounterGUID(ObjectGuid guid) { m_HealingCounterGUID = guid; }
@@ -2664,8 +2640,6 @@ class Player : public Unit, public GridObject<Player>
         void SetDelayedTeleportFlag(bool setting) { m_bHasDelayedTeleport = setting; }
         void ScheduleDelayedOperation(uint32 operation) { if (operation < DELAYED_END) m_DelayedOperations |= operation; }
 
-        // VISTAWOW ANTICHEAT
-        AntiCheat* m_anticheat;
         // VISTAWOW DPS COUNTERS
         ObjectGuid m_DamageCounterGUID;
         ObjectGuid m_HealingCounterGUID;
