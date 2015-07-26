@@ -23,7 +23,7 @@
 #include "Unit.h"
 #include "Containers.h"
 #include "CombatCounter.h"
-
+#include "EventMap.h"
 #include <list>
 
 class Player;
