@@ -22,13 +22,12 @@
 #include "Util.h"
 #include "AppenderConsole.h"
 #include "AppenderFile.h"
-#include "AppenderDB.h"
 #include "LogOperation.h"
 
 #include <cstdio>
 #include <sstream>
 
-Log::Log() : _ioService(nullptr), _strand(nullptr)
+Log::Log() : AppenderId(0), lowestLogLevel(LOG_LEVEL_FATAL), _ioService(nullptr), _strand(nullptr)
 {
     m_logsTimestamp = "_" + GetTimestampStr();
     RegisterAppender<AppenderConsole>();

@@ -107,7 +107,6 @@ class Appender
 
         uint8 id;
         std::string name;
-        AppenderType type;
         LogLevel level;
         AppenderFlags flags;
 };
@@ -127,9 +126,7 @@ Appender* CreateAppender(uint8 id, std::string const& name, LogLevel level, Appe
 class InvalidAppenderArgsException : public std::length_error
 {
 public:
-    using std::length_error::length_error;
-
-    explicit InvalidAppenderArgsException(std::string const& message) : length_error(message) { }
+    explicit InvalidAppenderArgsException(std::string const& message) : std::length_error(message) { }
 };
 
 #endif
