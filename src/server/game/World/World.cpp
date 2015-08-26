@@ -3249,11 +3249,11 @@ void World::AddCharacterNameData(ObjectGuid guid, std::string const& name, uint8
     data.m_level = level;
 }
 
-void World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
+bool World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
 {
     std::map<ObjectGuid, CharacterNameData>::iterator itr = _characterNameDataMap.find(guid);
     if (itr == _characterNameDataMap.end())
-        return;
+        return false;
 
     itr->second.m_name = name;
 
@@ -3262,6 +3262,7 @@ void World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, ui
 
     if (race != RACE_NONE)
         itr->second.m_race = race;
+        return true;
 
     WorldPacket data(SMSG_INVALIDATE_PLAYER, 8);
     data << guid;
