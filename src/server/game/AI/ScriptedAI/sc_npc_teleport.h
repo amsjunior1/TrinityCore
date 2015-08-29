@@ -16,7 +16,6 @@
 
 #include <vector>
 
-
 namespace nsNpcTel
 {
     // Different types of permissions

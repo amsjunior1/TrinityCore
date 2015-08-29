@@ -1,4 +1,4 @@
-#include "ScriptPCH.h"
+#include "Player.h"
 #include "Config.h"
 #include "Language.h"
 #include "Transmogrification.h"

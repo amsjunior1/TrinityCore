@@ -10,8 +10,8 @@
  *
  **/
 
-
-#include "ScriptPCH.h"
+#include "Player.h"
+#include "WorldSession.h"
 #include "sc_npc_teleport.h"
 
 #define TELE    nsNpcTel::CatDest

@@ -1,7 +1,7 @@
 #ifndef SC_ACSCRIPTS_H
 #define SC_ACSCRIPTS_H
 
-#include "ScriptPCH.h"
+#include "ScriptMgr.h"
 
 class AnticheatScripts: public PlayerScript
 {
