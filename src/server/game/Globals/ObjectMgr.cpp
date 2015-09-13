@@ -3966,31 +3966,31 @@ void ObjectMgr::LoadQuests()
     mExclusiveQuestGroups.clear();
 
     QueryResult result = WorldDatabase.Query("SELECT "
-        //0      1           2         3           4            5                6             7            8
-        "ID, QuestType, QuestLevel, MinLevel, QuestSortID, QuestInfoID, SuggestedGroupNum, LimitTime, RequiredRaces,"
+        //0      1           2         3           4            5                6              7             8
+        "ID, QuestType, QuestLevel, MinLevel, QuestSortID, QuestInfoID, SuggestedGroupNum, TimeAllowed, AllowableRaces,"
         //      9                     10                   11                    12
         "RequiredFactionId1, RequiredFactionId2, RequiredFactionValue1, RequiredFactionValue2, "
-        //      13             14               15                    16               17             18             19               20
-        "NextQuestIdChain, RewardXPId, RewardOrRequiredMoney, RewardMoneyMaxLevel, RewardSpell, RewardSpellCast, RewardHonor, RewardHonorMultiplier, "
-        //      21       22        23              24                25               26
-        "SourceItemId, Flags, RewardTitle, RequiredPlayerKills, RewardTalents, RewardArenaPoints, "
+        //     13                 14               15             16                17               18            19            20
+        "RewardNextQuest, RewardXPDifficulty, RewardMoney, RewardBonusMoney, RewardDisplaySpell, RewardSpell, RewardHonor, RewardKillHonor, "
+        //   21       22        23              24                25               26
+        "StartItem, Flags, RewardTitle, RequiredPlayerKills, RewardTalents, RewardArenaPoints, "
         //    27            28            29           30             31            32            33            34
         "RewardItem1, RewardAmount1, RewardItem2, RewardAmount2, RewardItem3, RewardAmount3, RewardItem4, RewardAmount4, "
         //        35                      36                      37                      38                      39                      40                      41                      42                      43                      44                     45                      46
         "RewardChoiceItemID1, RewardChoiceItemQuantity1, RewardChoiceItemID2, RewardChoiceItemQuantity2, RewardChoiceItemID3, RewardChoiceItemQuantity3, RewardChoiceItemID4, RewardChoiceItemQuantity4, RewardChoiceItemID5, RewardChoiceItemQuantity5, RewardChoiceItemID6, RewardChoiceItemQuantity6, "
         //       47                 48                     49                  50                  51                     52                 53                  54                     55                  56                  57                    58                   59                 60                      61
         "RewardFactionID1, RewardFactionValue1, RewardFactionOverride1, RewardFactionID2, RewardFactionValue2, RewardFactionOverride2, RewardFactionID3, RewardFactionValue3, RewardFactionOverride3, RewardFactionID4, RewardFactionValue4, RewardFactionOverride4, RewardFactionID5, RewardFactionValue5,  RewardFactionOverride5,"
-        //   62        63      64        65
-        "PointMapId, PointX, PointY, PointOption, "
-        //   66          67               68           69             70
-        "LogTitle, LogDescription, QuestDescription, EndText, QuestCompletionLog, "
+        //    62        63    64       65
+        "POIContinent, POIx, POIy, POIPriority, "
+        //   66          67               68                69                70
+        "LogTitle, LogDescription, QuestDescription, AreaDescription, QuestCompletionLog, "
         //      71                72                73                74                   75                     76                    77                      78
         "RequiredNpcOrGo1, RequiredNpcOrGo2, RequiredNpcOrGo3, RequiredNpcOrGo4, RequiredNpcOrGoCount1, RequiredNpcOrGoCount2, RequiredNpcOrGoCount3, RequiredNpcOrGoCount4, "
-        //         79                     80                    81                     82                        83                       84                        85                        86
-        "RequiredSourceItemId1, RequiredSourceItemId2, RequiredSourceItemId3, RequiredSourceItemId4, RequiredSourceItemCount1, RequiredSourceItemCount2, RequiredSourceItemCount3, RequiredSourceItemCount4, "
+        //   79         80         81         82            83                 84                  85                86
+        "ItemDrop1, ItemDrop2, ItemDrop3, ItemDrop4, ItemDropQuantity1, ItemDropQuantity2, ItemDropQuantity3, ItemDropQuantity4, "
         //      87               88               89               90               91               92                93                  94                  95                  96                  97                  98
         "RequiredItemId1, RequiredItemId2, RequiredItemId3, RequiredItemId4, RequiredItemId5, RequiredItemId6, RequiredItemCount1, RequiredItemCount2, RequiredItemCount3, RequiredItemCount4, RequiredItemCount5, RequiredItemCount6, "
-        //  99          100             101             102             103        
+        //  99          100             101             102             103
         "Unknown0, ObjectiveText1, ObjectiveText2, ObjectiveText3, ObjectiveText4"
         " FROM quest_template");
     if (!result)
@@ -4011,7 +4011,7 @@ void ObjectMgr::LoadQuests()
     } while (result->NextRow());
 
     std::map<uint32, uint32> usedMailTemplates;
-    
+
     // Load `quest_details`
     //                                   0   1       2       3       4       5            6            7            8
     result = WorldDatabase.Query("SELECT ID, Emote1, Emote2, Emote3, Emote4, EmoteDelay1, EmoteDelay2, EmoteDelay3, EmoteDelay4 FROM quest_details");
@@ -5090,13 +5090,13 @@ void ObjectMgr::LoadEventScripts()
     {
         for (size_t node_idx = 0; node_idx < sTaxiPathNodesByPath[path_idx].size(); ++node_idx)
         {
-            TaxiPathNodeEntry const& node = sTaxiPathNodesByPath[path_idx][node_idx];
+            TaxiPathNodeEntry const* node = sTaxiPathNodesByPath[path_idx][node_idx];
 
-            if (node.ArrivalEventID)
-                evt_scripts.insert(node.ArrivalEventID);
+            if (node->ArrivalEventID)
+                evt_scripts.insert(node->ArrivalEventID);
 
-            if (node.DepartureEventID)
-                evt_scripts.insert(node.DepartureEventID);
+            if (node->DepartureEventID)
+                evt_scripts.insert(node->DepartureEventID);
         }
     }
 
