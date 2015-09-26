@@ -108,7 +108,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (player->GetSocial()->HasIgnore(GetPlayer()->GetGUIDLow()))
+    if (player->GetSocial()->HasIgnore(GetPlayer()->GetGUID().GetCounter()))
     {
         SendPartyResult(PARTY_OP_INVITE, membername, ERR_IGNORING_YOU_S);
         return;
@@ -211,7 +211,7 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recvData)
 
     if (group->GetLeaderGUID() == GetPlayer()->GetGUID())
     {
-        TC_LOG_ERROR("network", "HandleGroupAcceptOpcode: player %s(%d) tried to accept an invite to his own group", GetPlayer()->GetName().c_str(), GetPlayer()->GetGUIDLow());
+        TC_LOG_ERROR("network", "HandleGroupAcceptOpcode: player %s(%d) tried to accept an invite to his own group", GetPlayer()->GetName().c_str(), GetPlayer()->GetGUID().GetCounter());
         return;
     }
 
@@ -284,7 +284,7 @@ void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recvData)
     if (guid == GetPlayer()->GetGUID())
     {
         TC_LOG_ERROR("network", "WorldSession::HandleGroupUninviteGuidOpcode: leader %s(%d) tried to uninvite himself from the group.",
-            GetPlayer()->GetName().c_str(), GetPlayer()->GetGUIDLow());
+            GetPlayer()->GetName().c_str(), GetPlayer()->GetGUID().GetCounter());
         return;
     }
 
@@ -329,7 +329,7 @@ void WorldSession::HandleGroupUninviteOpcode(WorldPacket& recvData)
     if (GetPlayer()->GetName() == membername)
     {
         TC_LOG_ERROR("network", "WorldSession::HandleGroupUninviteOpcode: leader %s(%d) tried to uninvite himself from the group.",
-            GetPlayer()->GetName().c_str(), GetPlayer()->GetGUIDLow());
+            GetPlayer()->GetName().c_str(), GetPlayer()->GetGUID().GetCounter());
         return;
     }
 

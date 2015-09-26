@@ -214,6 +214,7 @@ InstanceMap* MapInstanced::CreateInstance(uint32 InstanceId, InstanceSave* save,
     ASSERT(map->IsDungeon());
 
     map->LoadRespawnTimes();
+    map->LoadCorpseData();
 
     bool load_data = save != NULL;
     map->CreateInstanceData(load_data);

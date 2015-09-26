@@ -210,10 +210,10 @@ ObjectGuid SpellCastTargets::GetOrigUnitTargetGUID() const
 {
     switch (m_origObjectTargetGUID.GetHigh())
     {
-        case HIGHGUID_PLAYER:
-        case HIGHGUID_VEHICLE:
-        case HIGHGUID_UNIT:
-        case HIGHGUID_PET:
+        case HighGuid::Player:
+        case HighGuid::Vehicle:
+        case HighGuid::Unit:
+        case HighGuid::Pet:
             return m_origObjectTargetGUID;
         default:
             return ObjectGuid();
@@ -2222,6 +2222,9 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     uint8 mask = target->effectMask;
 
     Unit* unit = m_caster->GetGUID() == target->targetGUID ? m_caster : ObjectAccessor::GetUnit(*m_caster, target->targetGUID);
+    if (!unit && !target->targetGUID.IsPlayer()) // only players may be targeted across maps
+        return;
+
     if (!unit)
     {
         uint8 farMask = 0;
@@ -2234,7 +2237,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
         if (!farMask)
             return;
         // find unit in world
-        unit = ObjectAccessor::FindUnit(target->targetGUID);
+        unit = ObjectAccessor::FindPlayer(target->targetGUID);
         if (!unit)
             return;
 
@@ -3432,7 +3435,7 @@ void Spell::_handle_finish_phase()
 
     if (m_caster->m_extraAttacks && m_spellInfo->HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS))
     {
-        if (Unit* victim = ObjectAccessor::FindUnit(m_targets.GetOrigUnitTargetGUID()))
+        if (Unit* victim = ObjectAccessor::GetUnit(*m_caster, m_targets.GetOrigUnitTargetGUID()))
             m_caster->HandleProcExtraAttackFor(victim);
         else
             m_caster->m_extraAttacks = 0;
@@ -3561,7 +3564,7 @@ void Spell::finish(bool ok)
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spell);
         if (spellInfo && spellInfo->SpellIconID == 2056)
         {
-            TC_LOG_DEBUG("spells", "Statue %d is unsummoned in spell %d finish", m_caster->GetGUIDLow(), m_spellInfo->Id);
+            TC_LOG_DEBUG("spells", "Statue %d is unsummoned in spell %d finish", m_caster->GetGUID().GetCounter(), m_spellInfo->Id);
             m_caster->setDeathState(JUST_DIED);
             return;
         }
@@ -4245,7 +4248,7 @@ void Spell::TakeCastItem()
     {
         // This code is to avoid a crash
         // I'm not sure, if this is really an error, but I guess every item needs a prototype
-        TC_LOG_ERROR("spells", "Cast item has no item prototype highId=%d, lowId=%d", m_CastItem->GetGUIDHigh(), m_CastItem->GetGUIDLow());
+        TC_LOG_ERROR("spells", "Cast item has no item prototype %s", m_CastItem->GetGUID().ToString().c_str());
         return;
     }
 
@@ -6782,7 +6785,7 @@ SpellEvent::~SpellEvent()
     else
     {
         TC_LOG_ERROR("spells", "~SpellEvent: %s %u tried to delete non-deletable spell %u. Was not deleted, causes memory leak.",
-            (m_Spell->GetCaster()->GetTypeId() == TYPEID_PLAYER ? "Player" : "Creature"), m_Spell->GetCaster()->GetGUIDLow(), m_Spell->m_spellInfo->Id);
+            (m_Spell->GetCaster()->GetTypeId() == TYPEID_PLAYER ? "Player" : "Creature"), m_Spell->GetCaster()->GetGUID().GetCounter(), m_Spell->m_spellInfo->Id);
         ABORT();
     }
 }
