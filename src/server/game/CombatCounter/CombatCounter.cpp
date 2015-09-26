@@ -77,7 +77,7 @@ void CombatCounter::InputValue(Unit* attacker, uint32 value)
         return;
 
     if (Player* player = attacker->GetCharmerOrOwnerPlayerOrPlayerItself())
-        ValueTable[player->GetGUIDLow()] += value;
+        ValueTable[player->GetGUID().GetCounter()] += value;
 }
 
 void CombatCounter::CombatComplete()

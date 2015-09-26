@@ -60,7 +60,7 @@ bool IsWatcher(uint32 guid)
 void ArenaWatcherStart(Player* player)
 {
     player->SetVisible(false);
-    uint32 guid = player->GetGUIDLow();
+    uint32 guid = player->GetGUID().GetCounter();
 
     if (IsWatcher(guid))
         return;
@@ -93,7 +93,7 @@ void ArenaWatcherAfterTeleport(Player* player)
 
 void ArenaWatcherEnd(Player* player)
 {
-    uint32 guid = player->GetGUIDLow();
+    uint32 guid = player->GetGUID().GetCounter();
 
     if (!IsWatcher(guid))
         return;

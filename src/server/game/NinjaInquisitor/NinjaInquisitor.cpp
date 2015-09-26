@@ -46,7 +46,7 @@ uint32 NinjaInquisitor::GetLastInstanceId(uint32 playerGUID)
 
 uint32 NinjaInquisitor::GetLastInstanceId(Player* player)
 {
-    return GetLastInstanceId(player->GetGUIDLow());
+    return GetLastInstanceId(player->GetGUID().GetCounter());
 }
 
 void NinjaInquisitor::SetLastInstanceId(uint32 playerGUID, uint32 instanceId)
@@ -57,7 +57,7 @@ void NinjaInquisitor::SetLastInstanceId(uint32 playerGUID, uint32 instanceId)
 
 void NinjaInquisitor::SetLastInstanceId(Player* player, uint32 instanceId)
 {
-    SetLastInstanceId(player->GetGUIDLow(), instanceId);
+    SetLastInstanceId(player->GetGUID().GetCounter(), instanceId);
 }
 
 uint32 NinjaInquisitor::GetInstanceId(ObjectGuid playerGUID)
@@ -126,7 +126,7 @@ void NinjaInquisitor::LogRandomRoll(Player* player, uint32 minimum, uint32 maxim
         return;
 
     if (uint32 instanceId = GetInstanceId(player))
-        Log(instanceId, player->GetGUIDLow(), "randomroll %d %d %d", minimum, maximum, roll);
+        Log(instanceId, player->GetGUID().GetCounter(), "randomroll %d %d %d", minimum, maximum, roll);
 }
 
 void NinjaInquisitor::LogItemRoll(ObjectGuid itemGUID, uint32 itemEntry, ObjectGuid playerGUID, uint8 rollNumber, uint8 rollType)
@@ -163,9 +163,9 @@ void NinjaInquisitor::LogMessage(Player* player, uint32 type, uint32 lang, std::
             uint32 instanceId2 = GetInstanceId(receiver);
 
             if (instanceId)
-                Log(instanceId,  player->GetGUIDLow(), "whisper %d %s", receiver->GetGUIDLow(), message.c_str());
+                Log(instanceId,  player->GetGUID().GetCounter(), "whisper %d %s", receiver->GetGUID().GetCounter(), message.c_str());
             if (instanceId2 && (instanceId != instanceId2))
-                Log(instanceId2, player->GetGUIDLow(), "whisper %d %s", receiver->GetGUIDLow(), message.c_str());
+                Log(instanceId2, player->GetGUID().GetCounter(), "whisper %d %s", receiver->GetGUID().GetCounter(), message.c_str());
         }
 
     if (!instanceId)
@@ -181,34 +181,34 @@ void NinjaInquisitor::LogMessage(Player* player, uint32 type, uint32 lang, std::
     switch (type)
     {
         case CHAT_MSG_SAY:
-            Log(instanceId, player->GetGUIDLow(), "say %d %s", inInstance, message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "say %d %s", inInstance, message.c_str());
             break;
         case CHAT_MSG_YELL:
-            Log(instanceId, player->GetGUIDLow(), "yell %d %s", inInstance, message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "yell %d %s", inInstance, message.c_str());
             break;
         case CHAT_MSG_GUILD:
-            Log(instanceId, player->GetGUIDLow(), "guild %d %s", guildId, message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "guild %d %s", guildId, message.c_str());
             break;
         case CHAT_MSG_OFFICER:
-            Log(instanceId, player->GetGUIDLow(), "officer %d %s", guildId, message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "officer %d %s", guildId, message.c_str());
             break;
         case CHAT_MSG_PARTY:
-            Log(instanceId, player->GetGUIDLow(), "party %s", message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "party %s", message.c_str());
             break;
         case CHAT_MSG_RAID:
-            Log(instanceId, player->GetGUIDLow(), "raid %s", message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "raid %s", message.c_str());
             break;
         case CHAT_MSG_PARTY_LEADER:
-            Log(instanceId, player->GetGUIDLow(), "party_leader %s", message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "party_leader %s", message.c_str());
             break;
         case CHAT_MSG_RAID_LEADER:
-            Log(instanceId, player->GetGUIDLow(), "raid_leader %s", message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "raid_leader %s", message.c_str());
             break;
         case CHAT_MSG_RAID_WARNING:
-            Log(instanceId, player->GetGUIDLow(), "raid_warning %s", message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "raid_warning %s", message.c_str());
             break;
         case CHAT_MSG_CHANNEL:
-            Log(instanceId, player->GetGUIDLow(), "channel %s %s", channel.c_str(), message.c_str());
+            Log(instanceId, player->GetGUID().GetCounter(), "channel %s %s", channel.c_str(), message.c_str());
             break;
     }
 }
@@ -253,7 +253,7 @@ void NinjaInquisitor::LogLootMoney(Player* player)
                 {
                     uint32 goldPerPlayer = uint32(loot->gold / playersNear.size());
                     for (std::vector<Player*>::const_iterator i = playersNear.begin(); i != playersNear.end(); ++i)
-                        Log(instanceId, (*i)->GetGUIDLow(), "loot_gold gameobject:%d %d", go->GetEntry(), goldPerPlayer);
+                        Log(instanceId, (*i)->GetGUID().GetCounter(), "loot_gold gameobject:%d %d", go->GetEntry(), goldPerPlayer);
                 }
             break;
         }
@@ -266,7 +266,7 @@ void NinjaInquisitor::LogLootMoney(Player* player)
                 {
                     uint32 goldPerPlayer = uint32(loot->gold / playersNear.size());
                     for (std::vector<Player*>::const_iterator i = playersNear.begin(); i != playersNear.end(); ++i)
-                        Log(instanceId, (*i)->GetGUIDLow(), "loot_gold creature:%d %d", creature->GetEntry(), goldPerPlayer);
+                        Log(instanceId, (*i)->GetGUID().GetCounter(), "loot_gold creature:%d %d", creature->GetEntry(), goldPerPlayer);
                 }
             break;
         }
@@ -300,9 +300,9 @@ void NinjaInquisitor::LogLootMasterGiveItem(Player* player, Player* receiver, It
     if (sourceEntry && (isCreature || isGameObject))
     {
         if (player == receiver)
-            Log(instanceId, player->GetGUIDLow(), "loot_self %s:%d %d:%d", isCreature ? "creature" : "gameobject", sourceEntry, item->GetEntry(), item->GetGUIDLow());
+            Log(instanceId, player->GetGUID().GetCounter(), "loot_self %s:%d %d:%d", isCreature ? "creature" : "gameobject", sourceEntry, item->GetEntry(), item->GetGUID().GetCounter());
         else
-            Log(instanceId, player->GetGUIDLow(), "loot_give %d %s:%d %d:%d", receiver->GetGUIDLow(), isCreature ? "creature" : "gameobject", sourceEntry, item->GetEntry(), item->GetGUIDLow());
+            Log(instanceId, player->GetGUID().GetCounter(), "loot_give %d %s:%d %d:%d", receiver->GetGUID().GetCounter(), isCreature ? "creature" : "gameobject", sourceEntry, item->GetEntry(), item->GetGUID().GetCounter());
     }
 }
 

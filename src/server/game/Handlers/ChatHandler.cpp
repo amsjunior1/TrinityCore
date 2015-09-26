@@ -263,7 +263,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 return;
             }
 
-            if (IsWatcher(sender->GetGUIDLow()))
+            if (IsWatcher(sender->GetGUID().GetCounter()))
             {
                 SendNotification(GetTrinityString(LANG_GM_SILENCE), sender->GetName().c_str());
                 return;

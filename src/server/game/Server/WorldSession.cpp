@@ -181,7 +181,7 @@ std::string WorldSession::GetPlayerInfo() const
 }
 
 /// Get player guid if available. Use for logging purposes only
-uint32 WorldSession::GetGUIDLow() const
+uint32 WorldSession::GetGUID().GetCounter() const
 {
     return GetPlayer() ? GetPlayer()->GetGUID().GetCounter() : 0;
 }
