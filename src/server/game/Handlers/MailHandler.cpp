@@ -293,7 +293,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
                 if (log)
                 {
                     sLog->outCommand(GetAccountId(), "GM %s (GUID: %u) (Account: %u) mail item: %s (Entry: %u Count: %u) "
-                        "to: %s (%s) (Account: %u)", GetPlayerName().c_str(), GetGUID().GetCounter(), GetAccountId(),
+                        "to: %s (%s) (Account: %u)", GetPlayerName().c_str(), GetGUIDLow(), GetAccountId(),
                         item->GetTemplate()->Name1.c_str(), item->GetEntry(), item->GetCount(),
                         receiverName.c_str(), receiverGuid.ToString().c_str(), receiverAccountId);
                 }
@@ -315,7 +315,7 @@ void WorldSession::HandleSendMail(WorldPacket& recvData)
         if (log && money > 0)
         {
             sLog->outCommand(GetAccountId(), "GM %s (GUID: %u) (Account: %u) mail money: %u to: %s (%s) (Account: %u)",
-                GetPlayerName().c_str(), GetGUID().GetCounter(), GetAccountId(), money, receiverName.c_str(), receiverGuid.ToString().c_str(), receiverAccountId);
+                GetPlayerName().c_str(), GetGUIDLow(), GetAccountId(), money, receiverName.c_str(), receiverGuid.ToString().c_str(), receiverAccountId);
         }
     }
 

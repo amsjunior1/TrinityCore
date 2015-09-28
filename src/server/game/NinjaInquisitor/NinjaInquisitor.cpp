@@ -245,7 +245,7 @@ void NinjaInquisitor::LogLootMoney(Player* player)
 
     switch (lootGUID.GetHigh())
     {
-        case HIGHGUID_GAMEOBJECT:
+        case HighGuid::GameObject:
         {
             GameObject* go = player->GetMap()->GetGameObject(lootGUID);
             if (go && (go->GetOwnerGUID() == player->GetGUID() || go->IsWithinDistInMap(player, INTERACTION_DISTANCE)))
@@ -257,8 +257,8 @@ void NinjaInquisitor::LogLootMoney(Player* player)
                 }
             break;
         }
-        case HIGHGUID_UNIT:
-        case HIGHGUID_VEHICLE:
+        case HighGuid::Unit:
+        case HighGuid::Vehicle:
         {
             Creature* creature = player->GetMap()->GetCreature(lootGUID);
             if (creature && !creature->IsAlive() && creature->IsWithinDistInMap(player, INTERACTION_DISTANCE))

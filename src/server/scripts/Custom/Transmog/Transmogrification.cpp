@@ -769,7 +769,7 @@ namespace
                 do
                 {
                     Field* field = result->Fetch();
-                    ObjectGuid itemGUID(HIGHGUID_ITEM, 0, field[0].GetUInt32());
+                    ObjectGuid itemGUID(HighGuid::Item, 0, field[0].GetUInt32());
                     uint32 fakeEntry = field[1].GetUInt32();
                     // Only load items that are in inventory / bank / etc
                     if (sObjectMgr->GetItemTemplate(fakeEntry) && player->GetItemByGuid(itemGUID))

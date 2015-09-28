@@ -971,7 +971,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         pCurrChar->RemoveAtLoginFlag(AT_LOGIN_FIRST);
     if(pCurrChar->HasAtLoginFlag(AT_LOGIN_UPDATE_NAME))
     {
-        QueryResult result = CharacterDatabase.PQuery("SELECT `name` FROM `characters` WHERE `guid` = '%u'", pCurrChar->GetGUIDLow());
+        QueryResult result = CharacterDatabase.PQuery("SELECT `name` FROM `characters` WHERE `guid` = '%u'", pCurrChar->GetGUID().GetCounter());
         if(result)
         {
             std::string newName;
