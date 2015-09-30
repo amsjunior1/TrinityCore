@@ -381,7 +381,7 @@ class npc_arena_watcher : public CreatureScript
             {
                 case GOSSIP_ACTION_INFO_DEF + 4:
                 {
-                    if (Player* target = sObjectAccessor->FindPlayerByName(targetName))
+                    if (Player* target = ObjectAccessor::FindPlayerByName(targetName))
                     {
                         if (!target->IsInWorld())
                             sCreatureTextMgr->SendChat(creature, SAY_TARGET_NOT_IN_WORLD, player);

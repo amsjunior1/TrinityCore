@@ -61,7 +61,7 @@ public:
             strCommand = command;
             normalizePlayerName(strCommand);
 
-            pTarget = sObjectAccessor->FindPlayerByName(strCommand.c_str()); //get player by name
+            pTarget = ObjectAccessor::FindPlayerByName(strCommand.c_str()); //get player by name
         }else
             pTarget = handler->getSelectedPlayer();
 
@@ -100,7 +100,7 @@ public:
             strCommand = command;
             normalizePlayerName(strCommand);
 
-            pTarget = sObjectAccessor->FindPlayerByName(strCommand.c_str()); //get player by name
+            pTarget = ObjectAccessor::FindPlayerByName(strCommand.c_str()); //get player by name
         }else
             pTarget = handler->getSelectedPlayer();
 
@@ -142,7 +142,7 @@ public:
         else
         {
             normalizePlayerName(strCommand);
-            Player* player = sObjectAccessor->FindPlayerByName(strCommand.c_str()); //get player by name
+            Player* player = ObjectAccessor::FindPlayerByName(strCommand.c_str()); //get player by name
             if (!player)
                 handler->PSendSysMessage("Player doesn't exist");
             else
@@ -169,7 +169,7 @@ public:
             strCommand = command;
 
             normalizePlayerName(strCommand);
-            player = sObjectAccessor->FindPlayerByName(strCommand.c_str()); //get player by name
+            player = ObjectAccessor::FindPlayerByName(strCommand.c_str()); //get player by name
 
             if (player)
                 guid = player->GetGUID().GetCounter();

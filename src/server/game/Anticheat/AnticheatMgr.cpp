@@ -343,7 +343,7 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
 void AnticheatMgr::AnticheatGlobalCommand(ChatHandler* handler)
 {
     // MySQL will sort all for us, anyway this is not the best way we must only save the anticheat data not whole player's data!.
-    sObjectAccessor->SaveAllPlayers();
+    ObjectAccessor::SaveAllPlayers();
 
     QueryResult resultDB = CharacterDatabase.Query("SELECT guid,average,total_reports FROM players_reports_status WHERE total_reports != 0 ORDER BY average ASC LIMIT 3;");
     if (!resultDB)

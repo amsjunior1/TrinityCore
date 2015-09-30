@@ -158,7 +158,7 @@ void NinjaInquisitor::LogMessage(Player* player, uint32 type, uint32 lang, std::
     uint32 instanceId = GetInstanceId(player);
 
     if (type == CHAT_MSG_WHISPER)
-        if (Player* receiver = sObjectAccessor->FindPlayerByName(to))
+        if (Player* receiver = ObjectAccessor::FindPlayerByName(to))
         {
             uint32 instanceId2 = GetInstanceId(receiver);
 
