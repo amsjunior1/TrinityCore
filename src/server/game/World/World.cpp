@@ -2157,7 +2157,10 @@ void World::Update(uint32 diff)
     if (m_timers[WUPDATE_CORPSES].Passed())
     {
         m_timers[WUPDATE_CORPSES].Reset();
-        sObjectAccessor->RemoveOldCorpses();
+        sMapMgr->DoForAllMaps([](Map* map)
+        {
+            map->RemoveOldCorpses();
+        });
     }
 
     ///- Process Game events when necessary
@@ -3241,11 +3244,11 @@ void World::AddCharacterNameData(ObjectGuid guid, std::string const& name, uint8
     data.m_level = level;
 }
 
-bool World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
+void World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender /*= GENDER_NONE*/, uint8 race /*= RACE_NONE*/)
 {
     std::map<ObjectGuid, CharacterNameData>::iterator itr = _characterNameDataMap.find(guid);
     if (itr == _characterNameDataMap.end())
-        return false;
+        return;
 
     itr->second.m_name = name;
 
@@ -3254,7 +3257,6 @@ bool World::UpdateCharacterNameData(ObjectGuid guid, std::string const& name, ui
 
     if (race != RACE_NONE)
         itr->second.m_race = race;
-        return true;
 
     WorldPacket data(SMSG_INVALIDATE_PLAYER, 8);
     data << guid;
@@ -3287,3 +3289,9 @@ void World::ReloadRBAC()
         if (WorldSession* session = itr->second)
             session->InvalidateRBACData();
 }
+
+void World::RemoveOldCorpses()
+{
+    m_timers[WUPDATE_CORPSES].SetCurrent(m_timers[WUPDATE_CORPSES].GetInterval());
+}
+

@@ -203,6 +203,10 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt32(0, m_accountId);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_INSTANCE_LOCK_TIMES, stmt);
 
+    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CORPSE_LOCATION);
+    stmt->setUInt64(0, lowGuid);
+    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_CORPSE_LOCATION, stmt);
+
     return res;
 }
 
@@ -892,7 +896,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
             pCurrChar->TeleportTo(pCurrChar->m_homebindMapId, pCurrChar->m_homebindX, pCurrChar->m_homebindY, pCurrChar->m_homebindZ, pCurrChar->GetOrientation());
     }
 
-    sObjectAccessor->AddObject(pCurrChar);
+    ObjectAccessor::AddObject(pCurrChar);
     //TC_LOG_DEBUG("Player %s added to Map.", pCurrChar->GetName().c_str());
 
     pCurrChar->SendInitialPacketsAfterAddToMap();
@@ -923,7 +927,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     sSocialMgr->SendFriendStatus(pCurrChar, FRIEND_ONLINE, pCurrChar->GetGUID().GetCounter(), true);
 
     // Place character in world (and load zone) before some object loading
-    pCurrChar->LoadCorpse();
+    pCurrChar->LoadCorpse(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CORPSE_LOCATION));
 
     // setting Ghost+speed if dead
     if (pCurrChar->m_deathState != ALIVE)
@@ -969,18 +973,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     bool firstLogin = pCurrChar->HasAtLoginFlag(AT_LOGIN_FIRST);
     if (firstLogin)
         pCurrChar->RemoveAtLoginFlag(AT_LOGIN_FIRST);
-    if(pCurrChar->HasAtLoginFlag(AT_LOGIN_UPDATE_NAME))
-    {
-        QueryResult result = CharacterDatabase.PQuery("SELECT `name` FROM `characters` WHERE `guid` = '%u'", pCurrChar->GetGUID().GetCounter());
-        if(result)
-        {
-            std::string newName;
-            newName = (*result)[0].GetString();
-            sWorld->UpdateCharacterNameData(pCurrChar->GetGUID(), newName);
-            sWorld->AddCharacterNameData(pCurrChar->GetGUID(), newName, pCurrChar->getGender(), pCurrChar->getRace(), pCurrChar->getClass(), pCurrChar->getLevel());
-        }
-        pCurrChar->RemoveAtLoginFlag(AT_LOGIN_UPDATE_NAME);
-    }
 
     // show time before shutdown if shutdown planned.
     if (sWorld->IsShuttingDown())
@@ -1691,10 +1683,10 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recvData)
         }
     }
 
-    // resurrect the character in case he's dead
-    sObjectAccessor->ConvertCorpseForPlayer(factionChangeInfo.Guid);
-
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
+
+    // resurrect the character in case he's dead
+    Player::OfflineResurrect(factionChangeInfo.Guid, trans);
 
     CharacterDatabase.EscapeString(factionChangeInfo.Name);
     Player::Customize(&factionChangeInfo, trans);
@@ -1839,6 +1831,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recvData)
                 trans->Append(stmt);
             }
 
+            /// @todo: make this part async
             if (!sWorld->getBoolConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GUILD))
             {
                 // Reset guild

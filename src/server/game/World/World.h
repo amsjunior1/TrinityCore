@@ -755,7 +755,7 @@ class World
 
         CharacterNameData const* GetCharacterNameData(ObjectGuid guid) const;
         void AddCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender, uint8 race, uint8 playerClass, uint8 level);
-        bool UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender = GENDER_NONE, uint8 race = RACE_NONE);
+        void UpdateCharacterNameData(ObjectGuid guid, std::string const& name, uint8 gender = GENDER_NONE, uint8 race = RACE_NONE);
         void UpdateCharacterNameDataLevel(ObjectGuid guid, uint8 level);
         void DeleteCharacterNameData(ObjectGuid guid) { _characterNameDataMap.erase(guid); }
         bool HasCharacterNameData(ObjectGuid guid) { return _characterNameDataMap.find(guid) != _characterNameDataMap.end(); }
@@ -767,6 +767,8 @@ class World
         void ReloadRBAC();
 
         void BroadcastWintergraspState();
+        void RemoveOldCorpses();
+
     protected:
         void _UpdateGameTime();
         // callback for UpdateRealmCharacters
